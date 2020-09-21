@@ -1,0 +1,24 @@
+html, body { 
+    height: 100%; 
+    margin: 0; 
+    padding: 0; 
+}
+
+/* DISPOSICIÓN DE LOS BLOQUES EN PANTALLA */
+#topDiv{
+    height: 75%;
+    width: 100%;
+}
+
+#mapContainer{
+    width: 70%;
+    height: 100%; 
+    display: inline-block;
+}
+
+#map_frame { 
+    height: 100%; 
+}
+
+
+
