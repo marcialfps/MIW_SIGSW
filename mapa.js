@@ -713,19 +713,27 @@ const historico = [
   },
 ];
 
+//Capa de KML
+var ctaLayer;
+
 /**
  * Inicialización del mapa
  */
 function initMap() {
-  const misOpciones = {
+  var misOpciones = {
     center: { lat: 43.35481, lng: -5.851805 },
-    zoom: 9,
+    zoom: 7,
     mapTypeId: google.maps.MapTypeId.SATELLITE,
-    mapTypeControl: false,
-    streetViewControl: false,
   };
   map = new google.maps.Map(document.getElementById("map_frame"), misOpciones);
-  showHeatmap("palacio-deportes");
+
+  ctaLayer = new google.maps.KmlLayer({
+    url: "https://www.dropbox.com/s/c76evcnvm65bizb/EstacionesCA_2016.kml?dl=1",
+    map: map,
+  });
+
+  console.log(ctaLayer);
+  showHeatmap("test");
 }
 
 function showHeatmap(station) {
