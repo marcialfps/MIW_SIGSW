@@ -88,6 +88,35 @@ const emissions_WMS = (coord, zoom) => {
   return myURL;
 };
 
+
+//Se añade la petición getFeaturesInfo incialmente sobre unos puntos X, Y puestos directaente
+var featureInfoWMS = function() {
+  //Capas de la petición
+  let layers_getFeatureInfo = 'Estaciones%20VLA%20CO'
+  let bbox = '-21.502441,32.199832,11.983887,45.449379'
+  let styles = 'default';
+  let srs = '4326';
+  let width = '256';
+  let height = '256';
+  let format = 'text/html';
+  let x = '162';
+  let y = '80';
+
+  //Construcción de la URL
+  let myURL= stations_WMS_url + "SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo";
+  myURL+="&QUERY_LAYERS=" + layers_getFeatureInfo;
+  myURL+="&BBOX="+bbox;
+  myURL+="&STYLES=" + styles;
+  myURL+="&SRS=EPSG:" + srs;
+  myURL+="&WIDTH=" + width;
+  myURL+="&HEIGHT=" + height;
+  myURL+="&FORMAT=" + format;
+  myURL+="&X="+ x;
+  myURL+="&Y="+ y;
+
+  return myURL;
+}
+
 // Inicialización del mapa
 function initMap() {
   //Street view
@@ -124,7 +153,9 @@ function initMap() {
     }
   });
 
+  
   showWmsLayer();
+
 }
 
 const showWmsLayer = (size) => {
@@ -146,6 +177,19 @@ const showWmsLayer = (size) => {
   overlayWMS = new google.maps.ImageMapType(overlayOptions);
   map.overlayMapTypes.push(overlayWMS);
 };
+
+/**
+ * Muestra la información para una X y una Y dadas
+ */
+function showFeatureInfo(){
+  let overlayOptions = {
+    getTileUrl: featureInfoWMS,
+    tileSize: new google.maps.Size(defaultTileSize, defaultTileSize),
+  };
+  let overlayWMS = new google.maps.ImageMapType(overlayOptions);
+  console.log(overlayWMS)
+  map.overlayMapTypes.push(overlayWMS);
+}
 
 /* Función para mostrar el streetView del punto que se pasa por parámetro */
 function showStreetView(coordinates) {
