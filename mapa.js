@@ -18,6 +18,12 @@ const streetViewMapOptions = {
     visible: false
   };
 
+//InfoWindow
+let infoWindow;
+
+//Elevation 
+let elevationService;
+
 // Capa de KML
 let kmlLayer;
 const kmlUrl = 'https://www.dropbox.com/s/c76evcnvm65bizb/EstacionesCA_2016.kml?dl=1';
@@ -60,6 +66,9 @@ const emissions_WMS = (coord, zoom) => {
 
 // Inicialización del mapa
 function initMap() {
+  infoWindow = new google.maps.InfoWindow();
+  elevationService = new google.maps.ElevationService();
+
   streetViewMapDiv = document.getElementById('streetview_frame');
   streetViewMap = new google.maps.StreetViewPanorama(streetViewMapDiv, streetViewMapOptions);
 
@@ -71,6 +80,7 @@ function initMap() {
   });
   kmlLayer.addListener('click', function(event) {
       var position = {lat: event.latLng.lat(), lng: event.latLng.lng()};
+      showInfoWindow(event);
       showStreetView(position);
   });
 
@@ -100,7 +110,7 @@ const showWmsLayer = (size) => {
 
 }
 
-// Street view
+// Street View
 function showStreetView(coordinates) {
     streetViewMap.setOptions({position: coordinates, visible: true})
 }
@@ -108,4 +118,34 @@ function showStreetView(coordinates) {
 function hideStreetView() {
   streetViewMap.setOptions({visible: false});
   streetViewMapDiv.style.display = 'none';
+}
+
+//Elevation service
+function getElevation(position) {
+  elevationService.getElevationForLocations({
+    'locations': [position]
+  }, function(results, status) {
+    if (status === 'OK') {
+      // Retrieve the first result
+      if (results[0]) {
+        return (results[0].elevation).toFixed(2) + ' metros';
+        
+      } else {
+        return 'No disponible';
+      }
+    } else {
+      return 'No disponible';
+    }
+  });
+}
+
+//Show info window
+function showInfoWindow(event) {
+  //Get elevation info
+  let elevation = getElevation(event.latLng);
+  if (elevation == undefined) elevation = 'No disponible';
+  //Show info
+  infoWindow.setContent('<b>' + event.featureData.name + '</b><br/>Elevación: ' + elevation);
+  infoWindow.setPosition(event.latLng);
+  infoWindow.open(map);
 }
