@@ -718,10 +718,23 @@ const misOpciones = {
   center: { lat: 43.35481, lng: -5.851805 },
   zoom: 7,
   mapTypeId: google.maps.MapTypeId.SATELLITE,
+  streetViewControl: false
 };
 
+// StreetView Map
+let streetViewMapDiv;
+let streetViewMap;
+const streetViewMapOptions = {
+    pov: {
+      heading: 34,
+      pitch: 10
+    },
+    visible: false
+  };
+
 // Capa de KML
-let ctaLayer;
+let kmlLayer;
+const kmlUrl = 'https://www.dropbox.com/s/c76evcnvm65bizb/EstacionesCA_2016.kml?dl=1';
 
 // Capa WMS
 const defaultTileSize = 256;
@@ -761,14 +774,24 @@ const emissions_WMS = (coord, zoom) => {
 
 // Inicialización del mapa
 function initMap() {
+  streetViewMapDiv = document.getElementById('streetview_frame');
+  streetViewMap = new google.maps.StreetViewPanorama(streetViewMapDiv, streetViewMapOptions);
 
   map = new google.maps.Map(document.getElementById("map_frame"), misOpciones);
-  ctaLayer = new google.maps.KmlLayer({
-    url: "https://www.dropbox.com/s/c76evcnvm65bizb/EstacionesCA_2016.kml?dl=1",
-    map: map,
+  kmlLayer = new google.maps.KmlLayer(kmlUrl, {
+    suppressInfoWindows: true,
+    preserveViewport: false,
+    map: map
+  });
+  kmlLayer.addListener('click', function(event) {
+      //TODO test
+      var fenway = {lat: 42.345573, lng: -71.098326};
+      showStreetView(fenway);
+    /* var content = event.featureDatainfoWindowHtml;
+    var testimonial = document.getElementById('streetview_frame');
+    testimonial.innerHTML = content; */
   });
 
-  console.log(ctaLayer);
   showHeatmap("test");
   showWmsLayer();
 }
@@ -811,4 +834,14 @@ const showWmsLayer = (size) => {
   overlayWMS = new google.maps.ImageMapType(overlayOptions);
   map.overlayMapTypes.push(overlayWMS);
 
+}
+
+// Street view
+function showStreetView(coordinates) {
+    streetViewMap.setOptions({position: coordinates, visible: true})
+}
+
+function hideStreetView() {
+  streetViewMap.setOptions({visible: false});
+  streetViewMapDiv.style.display = 'none';
 }

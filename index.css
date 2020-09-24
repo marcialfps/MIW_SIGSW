@@ -10,14 +10,17 @@ html, body {
     width: 100%;
 }
 
-#mapContainer{
-    width: 70%;
+#mapsContainer{
     height: 100%; 
-    display: inline-block;
+    display: flex;
 }
 
 #map_frame { 
-    height: 100%; 
+    width: 70%;
+}
+
+#streetview_frame {
+    width: 30%;
 }
 
 
