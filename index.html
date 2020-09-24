@@ -6,13 +6,16 @@
     </title>
     <style link="text/css"></style>
     <link rel="stylesheet" type="text/css" href="index.css" />
-    
+
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAaBo7bx5QaWY44Z4In3u8BNLGJxHiiLzs&libraries=geometry"></script>
     <script src="mapa.js"></script>
   </head>
 
   <body onload="initMap()">
     <h1>Sensores de calidad del aire en España</h1>
+    <input type="checkbox" id="distances" name="distances" value="Calcular distancias" onclick="distanceClick()" />
+    <label for="distances">Calcular distancias</label><br />
+    <div id="distance"></div>
     <div id="topDiv">
       <div id="mapsContainer">
         <div id="map_frame"></div>
