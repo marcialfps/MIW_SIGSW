@@ -70,12 +70,8 @@ function initMap() {
     map: map
   });
   kmlLayer.addListener('click', function(event) {
-      //TODO test
-      var fenway = {lat: 42.345573, lng: -71.098326};
-      showStreetView(fenway);
-    /* var content = event.featureDatainfoWindowHtml;
-    var testimonial = document.getElementById('streetview_frame');
-    testimonial.innerHTML = content; */
+      var position = {lat: event.latLng.lat(), lng: event.latLng.lng()};
+      showStreetView(position);
   });
 
   showWmsLayer();
