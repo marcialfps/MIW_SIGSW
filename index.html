@@ -6,14 +6,11 @@
     </title>
     <style link="text/css"></style>
     <link rel="stylesheet" type="text/css" href="estiloIndex.css" />
-    <script
-      async
-      defer
-      src="https://maps.googleapis.com/maps/api/js?callback=initMap&key=AIzaSyAaBo7bx5QaWY44Z4In3u8BNLGJxHiiLzs&libraries=geometry,visualization"
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAaBo7bx5QaWY44Z4In3u8BNLGJxHiiLzs&libraries=geometry,visualization"
     ></script>
   </head>
 
-  <body>
+  <body onload="initMap()">
     <h1>Sensores de calidad del aire en España</h1>
     <div id="topDiv">
       <div id="mapContainer">
