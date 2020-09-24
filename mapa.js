@@ -22,6 +22,12 @@ const streetViewMapOptions = {
 let poly;
 let firstMark, secondMark;
 
+//InfoWindow
+let infoWindow;
+
+//Elevation 
+let elevationService;
+
 // Capa de KML
 let kmlLayer;
 const kmlUrl =
@@ -84,12 +90,14 @@ const emissions_WMS = (coord, zoom) => {
 
 // Inicialización del mapa
 function initMap() {
+  //Street view
   streetViewMapDiv = document.getElementById("streetview_frame");
-  streetViewMap = new google.maps.StreetViewPanorama(
-    streetViewMapDiv,
-    streetViewMapOptions
-  );
-
+  streetViewMap = new google.maps.StreetViewPanorama(streetViewMapDiv, streetViewMapOptions);
+  //InfoWindow
+  infoWindow = new google.maps.InfoWindow();
+  //Elevation service
+  elevationService = new google.maps.ElevationService();
+  //Map
   map = new google.maps.Map(document.getElementById("map_frame"), misOpciones);
   kmlLayer = new google.maps.KmlLayer(kmlUrl, {
     suppressInfoWindows: true,
@@ -98,6 +106,8 @@ function initMap() {
   });
   kmlLayer.addListener("click", function (event) {
     var position = { lat: event.latLng.lat(), lng: event.latLng.lng() };
+    //Mostrar infow window y stretView
+    showInfoWindow(event);
     showStreetView(position);
 
     //Calculo de distancias
@@ -137,11 +147,13 @@ const showWmsLayer = (size) => {
   map.overlayMapTypes.push(overlayWMS);
 };
 
-// Street view
+/* Función para mostrar el streetView del punto que se pasa por parámetro */
 function showStreetView(coordinates) {
+  streetViewMapDiv.style.display = "flex";
   streetViewMap.setOptions({ position: coordinates, visible: true });
 }
 
+/* Función para ocultar el streetView */
 function hideStreetView() {
   streetViewMap.setOptions({ visible: false });
   streetViewMapDiv.style.display = "none";
@@ -192,4 +204,34 @@ function distanceClick() {
   if (!document.getElementById("distances").checked && poly) {
     poly.setMap(null);
   }
+}
+
+/* Función para calcular la elevación que tiene el punto que se pasa por parámetro */
+function getElevation(position) {
+  elevationService.getElevationForLocations({
+    'locations': [position]
+  }, function(results, status) {
+    if (status === 'OK') {
+      // Retrieve the first result
+      if (results[0]) {
+        return (results[0].elevation).toFixed(2) + ' metros';
+        
+      } else {
+        return 'No disponible';
+      }
+    } else {
+      return 'No disponible';
+    }
+  });
+}
+
+/* Función para mostrar un infoWindow sobre el marcador que el usuario selecciona */
+function showInfoWindow(event) {
+  //Get elevation info
+  let elevation = getElevation(event.latLng);
+  if (elevation == undefined) elevation = 'No disponible';
+  //Show info
+  infoWindow.setContent('<b>' + event.featureData.name + '</b><br/>Elevación: ' + elevation);
+  infoWindow.setPosition(event.latLng);
+  infoWindow.open(map);
 }
