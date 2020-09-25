@@ -136,7 +136,7 @@ function initMap() {
   kmlLayer.addListener("click", function (event) {
     var position = { lat: event.latLng.lat(), lng: event.latLng.lng() };
     //Mostrar infow window y stretView
-    showInfoWindow(event);
+    getElevation(event);
     showStreetView(position);
 
     //Calculo de distancias
@@ -251,31 +251,36 @@ function distanceClick() {
 }
 
 /* Función para calcular la elevación que tiene el punto que se pasa por parámetro */
-function getElevation(position) {
-  elevationService.getElevationForLocations({
-    'locations': [position]
-  }, function(results, status) {
-    if (status === 'OK') {
+
+function getElevation(event) {
+
+  var locations = [];
+  locations.push(event.latLng);
+
+  // Create a LocationElevationRequest object using the array's one value
+  var positionalRequest = {
+    'locations': locations
+  }
+
+  // Initiate the location request
+  elevationService.getElevationForLocations(positionalRequest, function(results, status) {
+    if (status == google.maps.ElevationStatus.OK) {
       // Retrieve the first result
       if (results[0]) {
-        return (results[0].elevation).toFixed(2) + ' metros';
-        
+        var elevation = (results[0].elevation).toFixed(2);
+        showInfoWindow(event, elevation.toString().replace(".", ",") + " metros.");
       } else {
-        return 'No disponible';
+        showInfoWindow(event, "No disponible");
       }
     } else {
-      return 'No disponible';
+      showInfoWindow(event, "No disponible");
     }
   });
 }
 
 /* Función para mostrar un infoWindow sobre el marcador que el usuario selecciona */
-function showInfoWindow(event) {
-  //Get elevation info
-  let elevation = getElevation(event.latLng);
-  if (elevation == undefined) elevation = 'No disponible';
-  //Show info
-  infoWindow.setContent('<b>' + event.featureData.name + '</b><br/>Elevación: ' + elevation);
+function showInfoWindow(event, elevation) {
+  infoWindow.setContent('<b>' + event.featureData.name + '</b><br/><b>Elevación:</b> ' + elevation);
   infoWindow.setPosition(event.latLng);
   infoWindow.open(map);
 }
