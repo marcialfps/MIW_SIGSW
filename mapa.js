@@ -1,11 +1,12 @@
 // Map
-let map;
 const misOpciones = {
   center: { lat: 43.35481, lng: -5.851805 },
   zoom: 7,
   mapTypeId: google.maps.MapTypeId.SATELLITE,
   streetViewControl: false,
 };
+let map = new google.maps.Map(document.getElementById("map_frame"), misOpciones);
+
 
 // StreetView Map
 let streetViewMapDiv;
@@ -25,7 +26,7 @@ let firstMark, secondMark;
 //InfoWindow
 let infoWindow;
 
-//Elevation 
+//Elevation
 let elevationService;
 
 // Capa de KML
@@ -33,64 +34,36 @@ let kmlLayer;
 const kmlUrl =
   "https://www.dropbox.com/s/c76evcnvm65bizb/EstacionesCA_2016.kml?dl=1";
 
-// Capa WMS
+
+
+/* Definición de los servicios WMS */
+
 const defaultTileSize = 256;
+// Servicios WMS de ESTACIONES
+// - CO
+const stations_CO_WMS = new WMS_Service(
+  "Estaciones CO",
+  "https://wms.mapama.gob.es/sig/EvaluacionAmbiental/CalidadAire/Estaciones_VLA_CO/wms.aspx?",
+  "Estaciones VLA CO",
+  true
+);
 
-// - Estaciones
-const stations_WMS_url =
-  "https://wms.mapama.gob.es/sig/EvaluacionAmbiental/CalidadAire/Estaciones_VLA_CO/wms.aspx?";
-const stations_WMS_Layers = "Estaciones VLA CO";
-const stations_WMS = (coord, zoom) => {
-  const proj = map.getProjection();
-  const zfactor = Math.pow(2, zoom);
-  const top = proj.fromPointToLatLng(
-    new google.maps.Point((coord.x * 256) / zfactor, (coord.y * 256) / zfactor)
-  );
-  const bot = proj.fromPointToLatLng(
-    new google.maps.Point(
-      ((coord.x + 1) * 256) / zfactor,
-      ((coord.y + 1) * 256) / zfactor
-    )
-  );
-  const bbox = top.lng() + "," + bot.lat() + "," + bot.lng() + "," + top.lat();
 
-  let myURL =
-    stations_WMS_url +
-    "SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&FORMAT=image/png&TRANSPARENT=TRUE";
-  myURL += `&LAYERS=${stations_WMS_Layers}&BBOX=${bbox}`;
-  // console.log("Estaciones: ", myURL)
-  return myURL;
-};
+// Servicios WMS de EMISIONES
 
-// - Emisiones
-const emissions_WMS_url =
-  "https://wms.mapama.gob.es/sig/EvaluacionAmbiental/Emisiones/MonoxidoCarbono_CO/wms.aspx?";
-const emissions_WMS_Layers = "Monóxido de carbono (CO)";
-const emissions_WMS = (coord, zoom) => {
-  const proj = map.getProjection();
-  const zfactor = Math.pow(2, zoom);
-  const top = proj.fromPointToLatLng(
-    new google.maps.Point((coord.x * 256) / zfactor, (coord.y * 256) / zfactor)
-  );
-  const bot = proj.fromPointToLatLng(
-    new google.maps.Point(
-      ((coord.x + 1) * 256) / zfactor,
-      ((coord.y + 1) * 256) / zfactor
-    )
-  );
-  const bbox = top.lng() + "," + bot.lat() + "," + bot.lng() + "," + top.lat();
+// - CO
+const emissions_CO_WMS = new WMS_Service(
+  "Emisiones CO",
+  "https://wms.mapama.gob.es/sig/EvaluacionAmbiental/Emisiones/MonoxidoCarbono_CO/wms.aspx?",
+  "Monóxido de carbono (CO)"
+);
 
-  let myURL =
-    emissions_WMS_url +
-    "SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&FORMAT=image/png&TRANSPARENT=TRUE";
-  myURL += `&LAYERS=${emissions_WMS_Layers}&BBOX=${bbox}`;
-  // console.log("Emisiones: ", myURL)
-  return myURL;
-};
+
+
 
 
 //Se añade la petición getFeaturesInfo incialmente sobre unos puntos X, Y puestos directaente
-var featureInfoWMS = function() {
+var featureInfoWMS = function () {
   //Capas de la petición
   let layers_getFeatureInfo = 'Estaciones%20VLA%20CO'
   let bbox = '-21.502441,32.199832,11.983887,45.449379'
@@ -103,21 +76,21 @@ var featureInfoWMS = function() {
   let y = '80';
 
   //Construcción de la URL
-  let myURL= stations_WMS_url + "SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo";
-  myURL+="&QUERY_LAYERS=" + layers_getFeatureInfo;
-  myURL+="&BBOX="+bbox;
-  myURL+="&STYLES=" + styles;
-  myURL+="&SRS=EPSG:" + srs;
-  myURL+="&WIDTH=" + width;
-  myURL+="&HEIGHT=" + height;
-  myURL+="&FORMAT=" + format;
-  myURL+="&X="+ x;
-  myURL+="&Y="+ y;
+  let myURL = stations_WMS_url + "SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo";
+  myURL += "&QUERY_LAYERS=" + layers_getFeatureInfo;
+  myURL += "&BBOX=" + bbox;
+  myURL += "&STYLES=" + styles;
+  myURL += "&SRS=EPSG:" + srs;
+  myURL += "&WIDTH=" + width;
+  myURL += "&HEIGHT=" + height;
+  myURL += "&FORMAT=" + format;
+  myURL += "&X=" + x;
+  myURL += "&Y=" + y;
 
   return myURL;
 }
 
-// Inicialización del mapa
+// Inicialización de los datos del mapa
 function initMap() {
   //Street view
   streetViewMapDiv = document.getElementById("streetview_frame");
@@ -127,7 +100,6 @@ function initMap() {
   //Elevation service
   elevationService = new google.maps.ElevationService();
   //Map
-  map = new google.maps.Map(document.getElementById("map_frame"), misOpciones);
   kmlLayer = new google.maps.KmlLayer(kmlUrl, {
     suppressInfoWindows: true,
     preserveViewport: false,
@@ -153,7 +125,7 @@ function initMap() {
     }
   });
 
-  
+
   showWmsLayer();
 
 }
@@ -163,7 +135,7 @@ const showWmsLayer = (size) => {
 
   // Stations
   let overlayOptions = {
-    getTileUrl: stations_WMS,
+    getTileUrl: stations_CO_WMS.getTileUrl,
     tileSize: new google.maps.Size(tileSize, tileSize),
   };
   let overlayWMS = new google.maps.ImageMapType(overlayOptions);
@@ -171,7 +143,7 @@ const showWmsLayer = (size) => {
 
   // Emissions
   overlayOptions = {
-    getTileUrl: emissions_WMS,
+    getTileUrl: emissions_CO_WMS.getTileUrl,
     tileSize: new google.maps.Size(tileSize, tileSize),
   };
   overlayWMS = new google.maps.ImageMapType(overlayOptions);
@@ -181,13 +153,12 @@ const showWmsLayer = (size) => {
 /**
  * Muestra la información para una X y una Y dadas
  */
-function showFeatureInfo(){
+function showFeatureInfo() {
   let overlayOptions = {
     getTileUrl: featureInfoWMS,
     tileSize: new google.maps.Size(defaultTileSize, defaultTileSize),
   };
   let overlayWMS = new google.maps.ImageMapType(overlayOptions);
-  console.log(overlayWMS)
   map.overlayMapTypes.push(overlayWMS);
 }
 
@@ -234,10 +205,10 @@ function haversine_distance(mk1, mk2) {
     Math.asin(
       Math.sqrt(
         Math.sin(difflat / 2) * Math.sin(difflat / 2) +
-          Math.cos(rlat1) *
-            Math.cos(rlat2) *
-            Math.sin(difflon / 2) *
-            Math.sin(difflon / 2)
+        Math.cos(rlat1) *
+        Math.cos(rlat2) *
+        Math.sin(difflon / 2) *
+        Math.sin(difflon / 2)
       )
     );
   return d;
@@ -263,7 +234,7 @@ function getElevation(event) {
   }
 
   // Initiate the location request
-  elevationService.getElevationForLocations(positionalRequest, function(results, status) {
+  elevationService.getElevationForLocations(positionalRequest, function (results, status) {
     if (status == google.maps.ElevationStatus.OK) {
       // Retrieve the first result
       if (results[0]) {
