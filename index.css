@@ -1,7 +1,7 @@
-html, body { 
-    height: 100%; 
-    margin: 0; 
-    padding: 0; 
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
 }
 
 /* DISPOSICIÓN DE LOS BLOQUES EN PANTALLA */
@@ -11,16 +11,27 @@ html, body {
 }
 
 #mapsContainer{
-    height: 100%; 
+    height: 100%;
     display: flex;
 }
 
-#map_frame { 
+#map_frame {
     width: 70%;
 }
 
 #streetview_frame {
     width: 30%;
+}
+
+/* Controles sobre el mapa (provisional) */
+
+div.controls {
+    display: flex;
+}
+
+div.controls > div {
+    margin: 5px;
+    padding: 5px;
 }
 
 

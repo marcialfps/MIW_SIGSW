@@ -35,33 +35,6 @@ const kmlUrl =
   "https://www.dropbox.com/s/c76evcnvm65bizb/EstacionesCA_2016.kml?dl=1";
 
 
-
-/* Definición de los servicios WMS */
-
-const defaultTileSize = 256;
-// Servicios WMS de ESTACIONES
-// - CO
-const stations_CO_WMS = new WMS_Service(
-  "Estaciones CO",
-  "https://wms.mapama.gob.es/sig/EvaluacionAmbiental/CalidadAire/Estaciones_VLA_CO/wms.aspx?",
-  "Estaciones VLA CO",
-  true
-);
-
-
-// Servicios WMS de EMISIONES
-
-// - CO
-const emissions_CO_WMS = new WMS_Service(
-  "Emisiones CO",
-  "https://wms.mapama.gob.es/sig/EvaluacionAmbiental/Emisiones/MonoxidoCarbono_CO/wms.aspx?",
-  "Monóxido de carbono (CO)"
-);
-
-
-
-
-
 //Se añade la petición getFeaturesInfo incialmente sobre unos puntos X, Y puestos directaente
 var featureInfoWMS = function () {
   //Capas de la petición
@@ -88,6 +61,12 @@ var featureInfoWMS = function () {
   myURL += "&Y=" + y;
 
   return myURL;
+}
+
+function initPage() {
+  initUI(); // Ver wms_manager.js
+  initMap();
+
 }
 
 // Inicialización de los datos del mapa
@@ -125,30 +104,9 @@ function initMap() {
     }
   });
 
-
   showWmsLayer();
-
 }
 
-const showWmsLayer = (size) => {
-  const tileSize = size || defaultTileSize;
-
-  // Stations
-  let overlayOptions = {
-    getTileUrl: stations_CO_WMS.getTileUrl,
-    tileSize: new google.maps.Size(tileSize, tileSize),
-  };
-  let overlayWMS = new google.maps.ImageMapType(overlayOptions);
-  map.overlayMapTypes.push(overlayWMS);
-
-  // Emissions
-  overlayOptions = {
-    getTileUrl: emissions_CO_WMS.getTileUrl,
-    tileSize: new google.maps.Size(tileSize, tileSize),
-  };
-  overlayWMS = new google.maps.ImageMapType(overlayOptions);
-  map.overlayMapTypes.push(overlayWMS);
-};
 
 /**
  * Muestra la información para una X y una Y dadas

@@ -1,8 +1,11 @@
-
+/*
+  En este fichero se administra el acceso a los distintos WMS que aportan la información
+  sobre los gases o emisiones que mostramos: CO, NO2, C6H6, SO2 y Ni
+*/
 class WMS_Service {
 
-  constructor(name, base_url, layers, stations) {
-    this.isStationsWms = stations || false;
+  constructor(name, base_url, layers, isStationsWms) {
+    this.isStationsWms = isStationsWms || false;
     this.name = name;
     this.base_url = base_url;
     this.layers = layers;
@@ -17,6 +20,26 @@ class WMS_Service {
     }
   }
 }
+
+// Organiza las capas WMS que muestra el mapa
+const showWmsLayer = (size) => {
+  const tileSize = size || defaultTileSize;
+  // Stations
+  let overlayOptions = {
+    getTileUrl: stations_SO2_WMS.getTileUrl,
+    tileSize: new google.maps.Size(tileSize, tileSize),
+  };
+  let overlayWMS = new google.maps.ImageMapType(overlayOptions);
+  map.overlayMapTypes.push(overlayWMS);
+
+  // Emissions
+  overlayOptions = {
+    getTileUrl: emissions_C6H6_WMS.getTileUrl,
+    tileSize: new google.maps.Size(tileSize, tileSize),
+  };
+  overlayWMS = new google.maps.ImageMapType(overlayOptions);
+  map.overlayMapTypes.push(overlayWMS);
+};
 
 
 // Extracted the processing of the map's bounding box
@@ -37,4 +60,113 @@ const getBoundingBox = (coord, zoom) => {
 
   const bbox = top.lng() + "," + bot.lat() + "," + bot.lng() + "," + top.lat();
   return bbox;
+}
+
+/* Definición de los servicios WMS */
+
+const defaultTileSize = 256;
+
+// ESTACIONES
+// - CO (Monóxido de Carbono)
+const stations_CO_WMS = new WMS_Service(
+  "Estaciones CO",
+  "https://wms.mapama.gob.es/sig/EvaluacionAmbiental/CalidadAire/Estaciones_VLA_CO/wms.aspx?",
+  "Estaciones VLA CO",
+  true
+);
+
+// - NO2 (Dióxido de Nitrógeno)
+const stations_NO2_WMS = new WMS_Service(
+  "Estaciones NO2",
+  "https://wms.mapama.gob.es/sig/EvaluacionAmbiental/CalidadAire/Estaciones_VLA_NO2/wms.aspx?",
+  "Estaciones VLA NO2",
+  true
+);
+
+// - C6H6 (Benceno)
+const stations_C6H6_WMS = new WMS_Service(
+  "Estaciones C6H6 (Benceno)",
+  "https://wms.mapama.gob.es/sig/EvaluacionAmbiental/CalidadAire/Estaciones_VLA_C6H6/wms.aspx?",
+  "Estaciones VLA C6H6",
+  true
+);
+
+// - SO2 (Dióxido de Azufre)
+const stations_SO2_WMS = new WMS_Service(
+  "Estaciones SO2",
+  "https://wms.mapama.gob.es/sig/EvaluacionAmbiental/CalidadAire/Estaciones_VLH_SO2/wms.aspx?",
+  "Estaciones VLH SO2",
+  true
+);
+
+// - Ni (Níquel)
+const stations_Ni_WMS = new WMS_Service(
+  "Estaciones Ni (Níquel y compuestos)",
+  "https://wms.mapama.gob.es/sig/EvaluacionAmbiental/CalidadAire/Estaciones_VO_Ni/wms.aspx?",
+  "Estaciones VO Ni",
+  true
+);
+
+
+// EMISIONES
+// - CO (Monóxido de Carbono)
+const emissions_CO_WMS = new WMS_Service(
+  "Emisiones CO",
+  "https://wms.mapama.gob.es/sig/EvaluacionAmbiental/Emisiones/MonoxidoCarbono_CO/wms.aspx?",
+  "Monóxido de carbono (CO)"
+);
+
+// - NO2 (Dióxido de Nitrógeno)
+const emissions_NO2_WMS = new WMS_Service(
+  "Emisiones NO2",
+  "https://wms.mapama.gob.es/sig/EvaluacionAmbiental/Emisiones/OxidosNitrogeno_NOx/wms.aspx?",
+  "Óxidos de Nitrógeno (NOx)"
+);
+
+// - C6H6 (Benceno)
+const emissions_C6H6_WMS = new WMS_Service(
+  "Emisiones C6H6 (Benceno)",
+  "https://wms.mapama.gob.es/sig/EvaluacionAmbiental/Emisiones/Benceno_C6H6/wms.aspx?",
+  "Benceno C6H6"
+);
+
+// - SO2 (Dióxido de Azufre)
+const emissions_SO2_WMS = new WMS_Service(
+  "Emisiones SO2",
+  "https://wms.mapama.gob.es/sig/EvaluacionAmbiental/Emisiones/OxidosAzufre_SOx/wms.aspx?",
+  "Óxidos de azufre (SOx/SO2)"
+);
+
+// - Ni (Níquel)
+const emissions_Ni_WMS = new WMS_Service(
+  "Emisiones Ni (Níquel y compuestos)",
+  "https://wms.mapama.gob.es/sig/EvaluacionAmbiental/Emisiones/Niquel_Ni/wms.aspx?",
+  "Níquel y sus compuestos (Ni)"
+);
+
+
+/* Variables de control de los WMS */
+
+let wms_selector = document.getElementById("gasses-selector");
+const current_wms = { stations: stations_CO_WMS, emissions: emissions_CO_WMS };
+
+const wms_services_stations = [
+  stations_CO_WMS,
+  stations_NO2_WMS,
+  stations_C6H6_WMS,
+  stations_SO2_WMS,
+  stations_Ni_WMS
+];
+
+const wms_services_emissions = [
+  emissions_CO_WMS,
+  emissions_NO2_WMS,
+  emissions_C6H6_WMS,
+  emissions_SO2_WMS,
+  emissions_Ni_WMS
+];
+
+// Rellena la combobox con los valores de los WMS creados
+function initUI() {
+
 }

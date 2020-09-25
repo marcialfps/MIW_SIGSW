@@ -1,29 +1,48 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>
-      Mapa inicial 01 - Ejemplo del API JavaScript de Google Maps v3
-    </title>
-    <style link="text/css"></style>
-    <link rel="stylesheet" type="text/css" href="index.css" />
 
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAaBo7bx5QaWY44Z4In3u8BNLGJxHiiLzs&libraries=geometry"></script>
-  </head>
+<head>
+  <title>
+    Mapa inicial 01 - Ejemplo del API JavaScript de Google Maps v3
+  </title>
+  <style link="text/css"></style>
+  <link rel="stylesheet" type="text/css" href="index.css" />
 
-  <body onload="initMap()">
-    <h1>Sensores de calidad del aire en España</h1>
-    <input type="checkbox" id="distances" name="distances" value="Calcular distancias" onclick="distanceClick()" />
-    <label for="distances">Calcular distancias</label><br />
-    <div id="distance"></div>
-    <div id="topDiv">
-      <div id="mapsContainer">
-        <div id="map_frame"></div>
-        <div id="streetview_frame"></div>
-      </div>
-      <!--<button onclick="showFeatureInfo()">FeatureInfo</button>-->
+  <noscript>Necsitas activar JavaScript.</noscript>
+
+  <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAaBo7bx5QaWY44Z4In3u8BNLGJxHiiLzs&libraries=geometry"></script>
+</head>
+
+<body onload="initPage()">
+  <h1>Sensores de calidad del aire en España</h1>
+  <div class="controls">
+    <div>
+      <input type="checkbox" id="distances" name="distances" value="Calcular distancias" onclick="distanceClick()" />
+      <label for="distances">Calcular distancias</label><br />
     </div>
+    <div>
+      <label for="gasses">Visualizar sustancia</label><br />
+      <select name="gasses" id="gasses-selector">
+        <option value="volvo">Volvo</option>
+        <option value="saab">Saab</option>
+        <option value="mercedes">Mercedes</option>
+        <option value="audi">Audi</option>
+      </select>
+    </div>
+  </div>
 
-    <script src="wms_manager.js"></script>
-    <script src="mapa.js"></script>
-  </body>
+  <div id="distance"></div>
+  <div id="topDiv">
+    <div id="mapsContainer">
+      <div id="map_frame"></div>
+      <div id="streetview_frame"></div>
+    </div>
+    <!--<button onclick="showFeatureInfo()">FeatureInfo</button>-->
+  </div>
+
+  <script src="wms_manager.js"></script>
+  <script src="mapa.js"></script>
+</body>
+
 </html>
