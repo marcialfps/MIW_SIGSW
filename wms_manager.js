@@ -5,10 +5,10 @@
 class WMS_Service {
 
   constructor(name, base_url, layers, isStationsWms) {
-    this.isStationsWms = isStationsWms || false;
     this.name = name;
     this.base_url = base_url;
     this.layers = layers;
+    this.isStationsWms = isStationsWms || false;
 
     this.getTileUrl = (coord, zoom) => {
       let myURL =
@@ -127,7 +127,6 @@ const emissions_Ni_WMS = new WMS_Service(
 /* Variables de control de los WMS */
 
 let wms_selector = document.getElementById("gasses-selector");
-const current_wms = { stations: stations_CO_WMS, emissions: emissions_CO_WMS };
 
 const wms_services_stations = [
   stations_CO_WMS,
