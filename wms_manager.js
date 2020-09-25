@@ -21,27 +21,6 @@ class WMS_Service {
   }
 }
 
-// Organiza las capas WMS que muestra el mapa
-const showWmsLayer = (size) => {
-  const tileSize = size || defaultTileSize;
-  // Stations
-  let overlayOptions = {
-    getTileUrl: stations_SO2_WMS.getTileUrl,
-    tileSize: new google.maps.Size(tileSize, tileSize),
-  };
-  let overlayWMS = new google.maps.ImageMapType(overlayOptions);
-  map.overlayMapTypes.push(overlayWMS);
-
-  // Emissions
-  overlayOptions = {
-    getTileUrl: emissions_C6H6_WMS.getTileUrl,
-    tileSize: new google.maps.Size(tileSize, tileSize),
-  };
-  overlayWMS = new google.maps.ImageMapType(overlayOptions);
-  map.overlayMapTypes.push(overlayWMS);
-};
-
-
 // Extracted the processing of the map's bounding box
 const getBoundingBox = (coord, zoom) => {
   if (!map) return;
@@ -166,7 +145,39 @@ const wms_services_emissions = [
   emissions_Ni_WMS
 ];
 
-// Rellena la combobox con los valores de los WMS creados
+// Rellena la combobox con los valores de los WMS creados y gestiona qué hacer al seleccionar valor
 function initUI() {
 
+  for (let wms_service of wms_services_emissions) {
+    wms_selector.innerHTML += `<option value="${wms_service.name}">${wms_service.name}</option>`
+  }
+
+  wms_selector.addEventListener('change', (e) => {
+    // Get the reference to the selected wms
+    const index = wms_services_emissions.findIndex(service => service.name.localeCompare(e.target.value) === 0);
+    showWmsLayer(index);
+  });
 }
+
+// Organiza las capas WMS que muestra el mapa
+const showWmsLayer = (index, size) => {
+  const tileSize = size || defaultTileSize;
+
+  // Clear old overlays
+  map.overlayMapTypes.clear();
+
+  // Set new overlays (stations and emissions)
+  let overlayOptions = {
+    getTileUrl: wms_services_stations[index].getTileUrl,
+    tileSize: new google.maps.Size(tileSize, tileSize),
+  };
+  let overlayWMS = new google.maps.ImageMapType(overlayOptions);
+  map.overlayMapTypes.push(overlayWMS);
+
+  overlayOptions = {
+    getTileUrl: wms_services_emissions[index].getTileUrl,
+    tileSize: new google.maps.Size(tileSize, tileSize),
+  };
+  overlayWMS = new google.maps.ImageMapType(overlayOptions);
+  map.overlayMapTypes.push(overlayWMS);
+};

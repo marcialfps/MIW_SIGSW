@@ -5,12 +5,13 @@ html, body {
 }
 
 /* DISPOSICIÓN DE LOS BLOQUES EN PANTALLA */
-#topDiv{
+
+#topDiv {
     height: 75%;
     width: 100%;
 }
 
-#mapsContainer{
+#mapsContainer {
     height: 100%;
     display: flex;
 }
@@ -29,10 +30,7 @@ div.controls {
     display: flex;
 }
 
-div.controls > div {
+div.controls>div {
     margin: 5px;
     padding: 5px;
 }
-
-
-

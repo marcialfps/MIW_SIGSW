@@ -104,7 +104,7 @@ function initMap() {
     }
   });
 
-  showWmsLayer();
+  if (wms_services_emissions.length && wms_services_stations.length) showWmsLayer(0);
 }
 
 
