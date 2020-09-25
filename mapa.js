@@ -36,32 +36,74 @@ const kmlUrl =
 
 
 //Se añade la petición getFeaturesInfo incialmente sobre unos puntos X, Y puestos directaente
-var featureInfoWMS = function () {
+function featureInfoWMS() {
   //Capas de la petición
+  let stations_WMS_url = 'https://wms.mapama.gob.es/sig/EvaluacionAmbiental/CalidadAire/Estaciones_VLA_CO/wms.aspx?';
   let layers_getFeatureInfo = 'Estaciones%20VLA%20CO'
   let bbox = '-21.502441,32.199832,11.983887,45.449379'
   let styles = 'default';
   let srs = '4326';
   let width = '256';
   let height = '256';
-  let format = 'text/html';
+  let format = 'application/json';
   let x = '162';
   let y = '80';
 
   //Construcción de la URL
-  let myURL = stations_WMS_url + "SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo";
-  myURL += "&QUERY_LAYERS=" + layers_getFeatureInfo;
-  myURL += "&BBOX=" + bbox;
-  myURL += "&STYLES=" + styles;
-  myURL += "&SRS=EPSG:" + srs;
-  myURL += "&WIDTH=" + width;
-  myURL += "&HEIGHT=" + height;
-  myURL += "&FORMAT=" + format;
-  myURL += "&X=" + x;
-  myURL += "&Y=" + y;
-
+  let myURL= stations_WMS_url + "SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo";
+  myURL+="&QUERY_LAYERS=" + layers_getFeatureInfo;
+  myURL+="&BBOX="+bbox;
+  myURL+="&STYLES=" + styles;
+  myURL+="&SRS=EPSG:" + srs;
+  myURL+="&WIDTH=" + width;
+  myURL+="&HEIGHT=" + height;
+  myURL+="&FORMAT=" + format;
+  myURL+="&X="+ x;
+  myURL+="&Y="+ y;
+  console.log("123")
   return myURL;
 }
+
+/**
+ * Muestra la información para una X y una Y dadas
+ */
+function showFeatureInfo(){
+  //console.log("1234")
+  const url = featureInfoWMS();
+  console.log(url)
+  const http = new XMLHttpRequest()
+  console.log("1234567890")
+
+  http.open("GET", url)
+  http.onreadystatechange = function(){
+      if(this.readyState == 4 && this.status == 200){
+          parserDataFeatureInfo(this.responseText)
+      }
+  }
+  http.send()
+}
+
+/**
+ * Parsea la información obtenida de la petición GetFeatureInfo
+ * @param {*} data 
+ */
+function parserDataFeatureInfo(data){
+  console.log("data")
+    let parser = new DOMParser();
+    let xmlDoc = parser.parseFromString(data,"text/xml");
+
+    document.getElementById("titleData").innerHTML = "Información obtenida";
+    document.getElementById("data").innerHTML = 
+      "<ul>" + 
+        "<li><strong>" + "Código Nacional: " + "</strong>" + xmlDoc.getElementsByTagName("FIELDS")[0].attributes[2].nodeValue + "</li>" + 
+        "<li><strong>" + "Año: " + "</strong>" + xmlDoc.getElementsByTagName("FIELDS")[0].attributes[3].nodeValue + "</li>" +
+        "<li><strong>" + "Código Europeo: " + "</strong>" + xmlDoc.getElementsByTagName("FIELDS")[0].attributes[4].nodeValue + "</li>" +
+        "<li><strong>" + "Nombre de la estación: " + "</strong>" + xmlDoc.getElementsByTagName("FIELDS")[0].attributes[5].nodeValue + "</li>" +
+        "<li><strong>" + "Valor legislado: " + "</strong>" + xmlDoc.getElementsByTagName("FIELDS")[0].attributes[6].nodeValue + "</li>" +
+        "<li><strong>" + "Datos: " + "</strong>" + xmlDoc.getElementsByTagName("FIELDS")[0].attributes[10].nodeValue + "</li>" +
+      "</ul>"
+}
+
 
 function initPage() {
   initUI(); // Ver wms_manager.js
@@ -107,18 +149,6 @@ function initMap() {
   if (wms_services_emissions.length && wms_services_stations.length) showWmsLayer(0);
 }
 
-
-/**
- * Muestra la información para una X y una Y dadas
- */
-function showFeatureInfo() {
-  let overlayOptions = {
-    getTileUrl: featureInfoWMS,
-    tileSize: new google.maps.Size(defaultTileSize, defaultTileSize),
-  };
-  let overlayWMS = new google.maps.ImageMapType(overlayOptions);
-  map.overlayMapTypes.push(overlayWMS);
-}
 
 /* Función para mostrar el streetView del punto que se pasa por parámetro */
 function showStreetView(coordinates) {
