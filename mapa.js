@@ -94,10 +94,10 @@ function parserDataFeatureInfo(data) {
   document.getElementById("titleData").innerHTML = "Información obtenida";
 
   console.log(xmlDoc)
-  if (xmlDoc.getElementsByTagName("ServiceException") != undefined) {
+  if (xmlDoc.getElementsByTagName("ServiceException")[0] != undefined) {
     document.getElementById("data").innerHTML = "<p>No se han encontrado datos</p>"
   }
-  else {
+  else if(xmlDoc.getElementsByTagName("FIELDS")[0] != undefined && xmlDoc.getElementsByTagName("FIELDS")[0].attributes != undefined){
     document.getElementById("data").innerHTML =
       "<ul>" +
       "<li><strong>" + "Código Nacional: " + "</strong>" + xmlDoc.getElementsByTagName("FIELDS")[0].attributes[2].nodeValue + "</li>" +
@@ -107,6 +107,9 @@ function parserDataFeatureInfo(data) {
       "<li><strong>" + "Valor legislado: " + "</strong>" + xmlDoc.getElementsByTagName("FIELDS")[0].attributes[6].nodeValue + "</li>" +
       "<li><strong>" + "Datos: " + "</strong>" + xmlDoc.getElementsByTagName("FIELDS")[0].attributes[10].nodeValue + "</li>" +
       "</ul>"
+  }
+  else{
+    document.getElementById("data").innerHTML = "<p>No se han encontrado datos</p>"
   }
 }
 
@@ -187,15 +190,6 @@ function calculatePixelPoint(latLng, zoom) {
 
   showFeatureInfo(pixelCoordinate.x, pixelCoordinate.y, tileCoordinate.x, tileCoordinate.y);
 
-
-  console.log(
-    'puntoControl',
-    'LatLng: ' + latLng,
-    'Zoom level: ' + zoom,
-    'World Coordinate: ' + worldCoordinate,
-    'Pixel Coordinate: ' + pixelCoordinate,
-    'Tile Coordinate: ' + tileCoordinate
-  );
 }
 
 function calculateLocaltion(latLng) {
