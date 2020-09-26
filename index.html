@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <link rel="icon" type="image/png" href="img/icon.png"/>
+    <link rel="icon" type="image/png" href="img/icon.png" />
     <title>Calidad del aire en España</title>
     <style link="text/css"></style>
     <link
@@ -46,29 +46,31 @@
         />
         Sensores de calidad del aire en España
       </a>
+      <div class="controls">
+        <div>
+          <input
+            type="checkbox"
+            id="distances"
+            name="distances"
+            value="Calcular distancias"
+            onclick="distanceClick()"
+          />
+          <label for="distances">Calcular distancias</label><br />
+        </div>
+        <div id="gasses-control">
+          <label for="gasses">Visualizar sustancia</label><br />
+          <select name="gasses" id="gasses-selector"></select>
+        </div>
+      </div>
     </nav>
-    <div class="controls">
-      <div>
-        <input
-          type="checkbox"
-          id="distances"
-          name="distances"
-          value="Calcular distancias"
-          onclick="distanceClick()"
-        />
-        <label for="distances">Calcular distancias</label><br />
-      </div>
-      <div>
-        <label for="gasses">Visualizar sustancia</label><br />
-        <select name="gasses" id="gasses-selector"></select>
-      </div>
-    </div>
 
     <div id="distance"></div>
     <div id="topDiv">
       <div id="mapsContainer">
         <div id="map_frame"></div>
-        <div id="streetview_frame"></div>
+        <div class="card">
+          <div class="card-body" id="streetview_frame"></div>
+        </div>
       </div>
       <button onclick="showFeatureInfo()">FeatureInfo</button>
     </div>

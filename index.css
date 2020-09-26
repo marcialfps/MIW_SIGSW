@@ -21,7 +21,6 @@ html, body {
 }
 
 #streetview_frame {
-    width: 30%;
 }
 
 /* Controles sobre el mapa (provisional) */
@@ -33,4 +32,8 @@ div.controls {
 div.controls>div {
     margin: 5px;
     padding: 5px;
+}
+
+#gasses-control {
+    display: flex;
 }
