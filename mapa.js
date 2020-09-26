@@ -7,6 +7,8 @@ const misOpciones = {
 };
 let map = new google.maps.Map(document.getElementById("map_frame"), misOpciones);
 
+var puntoControl = new google.maps.LatLng(43.354810,-5.851805);
+const TILE_SIZE = 256;
 
 // StreetView Map
 let streetViewMapDiv;
@@ -36,7 +38,7 @@ const kmlUrl =
 
 
 //Se añade la petición getFeaturesInfo incialmente sobre unos puntos X, Y puestos directaente
-function featureInfoWMS() {
+function featureInfoWMS(pixelX, pixelY) {
   //Capas de la petición
   let stations_WMS_url = 'https://wms.mapama.gob.es/sig/EvaluacionAmbiental/CalidadAire/Estaciones_VLA_CO/wms.aspx?';
   let layers_getFeatureInfo = 'Estaciones%20VLA%20CO'
@@ -46,8 +48,8 @@ function featureInfoWMS() {
   let width = '256';
   let height = '256';
   let format = 'application/json';
-  let x = '162';
-  let y = '80';
+  let x = pixelX; //'162';
+  let y = pixelY; //'80';
 
   //Construcción de la URL
   let myURL= stations_WMS_url + "SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo";
@@ -60,19 +62,17 @@ function featureInfoWMS() {
   myURL+="&FORMAT=" + format;
   myURL+="&X="+ x;
   myURL+="&Y="+ y;
-  console.log("123")
+
+
   return myURL;
 }
 
 /**
  * Muestra la información para una X y una Y dadas
  */
-function showFeatureInfo(){
-  //console.log("1234")
-  const url = featureInfoWMS();
-  console.log(url)
+function showFeatureInfo(pixelX, pixelY){
+  const url = featureInfoWMS(pixelX, pixelY);
   const http = new XMLHttpRequest()
-  console.log("1234567890")
 
   http.open("GET", url)
   http.onreadystatechange = function(){
@@ -88,12 +88,17 @@ function showFeatureInfo(){
  * @param {*} data 
  */
 function parserDataFeatureInfo(data){
-  console.log("data")
     let parser = new DOMParser();
     let xmlDoc = parser.parseFromString(data,"text/xml");
 
     document.getElementById("titleData").innerHTML = "Información obtenida";
-    document.getElementById("data").innerHTML = 
+
+    console.log(xmlDoc)
+    if(xmlDoc.getElementsByTagName("ServiceException") != undefined){
+      document.getElementById("data").innerHTML = "<p>No se han encontrado datos</p>"
+    }
+    else{
+      document.getElementById("data").innerHTML = 
       "<ul>" + 
         "<li><strong>" + "Código Nacional: " + "</strong>" + xmlDoc.getElementsByTagName("FIELDS")[0].attributes[2].nodeValue + "</li>" + 
         "<li><strong>" + "Año: " + "</strong>" + xmlDoc.getElementsByTagName("FIELDS")[0].attributes[3].nodeValue + "</li>" +
@@ -102,6 +107,7 @@ function parserDataFeatureInfo(data){
         "<li><strong>" + "Valor legislado: " + "</strong>" + xmlDoc.getElementsByTagName("FIELDS")[0].attributes[6].nodeValue + "</li>" +
         "<li><strong>" + "Datos: " + "</strong>" + xmlDoc.getElementsByTagName("FIELDS")[0].attributes[10].nodeValue + "</li>" +
       "</ul>"
+    }
 }
 
 
@@ -126,11 +132,21 @@ function initMap() {
     preserveViewport: false,
     map: map,
   });
+
+  calculatePixelPoint(puntoControl, map.getZoom());
+
+  map.addListener('zoom_changed', function() {
+    calculatePixelPoint(puntoControl, map.getZoom());
+  });
+
   kmlLayer.addListener("click", function (event) {
     var position = { lat: event.latLng.lat(), lng: event.latLng.lng() };
     //Mostrar infow window y stretView
     getElevation(event);
     showStreetView(position);
+
+    puntoControl= event.latLng;
+    calculatePixelPoint(puntoControl, map.getZoom());
 
     //Calculo de distancias
     if (document.getElementById("distances").checked) {
@@ -146,9 +162,49 @@ function initMap() {
     }
   });
 
+  
+
+  
+
   if (wms_services_emissions.length && wms_services_stations.length) showWmsLayer(0);
 }
 
+function calculatePixelPoint(latLng, zoom) {
+  var scale = 1 << zoom;
+
+  var worldCoordinate = calculateLocaltion(latLng);
+
+  var pixelCoordinate = new google.maps.Point(
+      Math.floor(worldCoordinate.x * scale),
+      Math.floor(worldCoordinate.y * scale));
+
+  var tileCoordinate = new google.maps.Point(
+      Math.floor(worldCoordinate.x * scale / TILE_SIZE),
+      Math.floor(worldCoordinate.y * scale / TILE_SIZE));
+
+  console.log(pixelCoordinate)
+
+  showFeatureInfo(pixelCoordinate.x, pixelCoordinate.y);
+  
+  
+  console.log(
+    'puntoControl',
+    'LatLng: ' + latLng,
+    'Zoom level: ' + zoom,
+    'World Coordinate: ' + worldCoordinate,
+    'Pixel Coordinate: ' + pixelCoordinate,
+    'Tile Coordinate: ' + tileCoordinate
+  );
+}
+
+function calculateLocaltion(latLng) {
+  var siny = Math.sin(latLng.lat() * Math.PI / 180);
+  siny = Math.min(Math.max(siny, -0.9999), 0.9999);
+
+  return new google.maps.Point(
+      TILE_SIZE * (0.5 + latLng.lng() / 360),
+      TILE_SIZE * (0.5 - Math.log((1 + siny) / (1 - siny)) / (4 * Math.PI)));
+}
 
 /* Función para mostrar el streetView del punto que se pasa por parámetro */
 function showStreetView(coordinates) {
