@@ -7,7 +7,7 @@ const misOpciones = {
 };
 let map = new google.maps.Map(document.getElementById("map_frame"), misOpciones);
 
-var puntoControl = new google.maps.LatLng(43.354810,-5.851805);
+var puntoControl = new google.maps.LatLng(43.354810, -5.851805);
 const TILE_SIZE = 256;
 
 // StreetView Map
@@ -38,11 +38,11 @@ const kmlUrl =
 
 
 //Se añade la petición getFeaturesInfo incialmente sobre unos puntos X, Y puestos directaente
-function featureInfoWMS(pixelX, pixelY) {
+function featureInfoWMS(pixelX, pixelY, tileX, tileY) {
   //Capas de la petición
   let stations_WMS_url = 'https://wms.mapama.gob.es/sig/EvaluacionAmbiental/CalidadAire/Estaciones_VLA_CO/wms.aspx?';
   let layers_getFeatureInfo = 'Estaciones%20VLA%20CO'
-  let bbox = '-21.502441,32.199832,11.983887,45.449379'
+
   let styles = 'default';
   let srs = '4326';
   let width = '256';
@@ -52,16 +52,16 @@ function featureInfoWMS(pixelX, pixelY) {
   let y = pixelY; //'80';
 
   //Construcción de la URL
-  let myURL= stations_WMS_url + "SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo";
-  myURL+="&QUERY_LAYERS=" + layers_getFeatureInfo;
-  myURL+="&BBOX="+bbox;
-  myURL+="&STYLES=" + styles;
-  myURL+="&SRS=EPSG:" + srs;
-  myURL+="&WIDTH=" + width;
-  myURL+="&HEIGHT=" + height;
-  myURL+="&FORMAT=" + format;
-  myURL+="&X="+ x;
-  myURL+="&Y="+ y;
+  let myURL = stations_WMS_url + "SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo";
+  myURL += "&QUERY_LAYERS=" + layers_getFeatureInfo;
+  myURL += "&BBOX=" + getBoundingBox({ x: tileX, y: tileY }, map.getZoom());
+  myURL += "&STYLES=" + styles;
+  myURL += "&SRS=EPSG:" + srs;
+  myURL += "&WIDTH=" + width;
+  myURL += "&HEIGHT=" + height;
+  myURL += "&FORMAT=" + format;
+  myURL += "&X=" + x;
+  myURL += "&Y=" + y;
 
 
   return myURL;
@@ -70,44 +70,44 @@ function featureInfoWMS(pixelX, pixelY) {
 /**
  * Muestra la información para una X y una Y dadas
  */
-function showFeatureInfo(pixelX, pixelY){
-  const url = featureInfoWMS(pixelX, pixelY);
+function showFeatureInfo(pixelX, pixelY, tileX, tileY) {
+  const url = featureInfoWMS(pixelX, pixelY, tileX, tileY);
   const http = new XMLHttpRequest()
 
   http.open("GET", url)
-  http.onreadystatechange = function(){
-      if(this.readyState == 4 && this.status == 200){
-          parserDataFeatureInfo(this.responseText)
-      }
+  http.onreadystatechange = function () {
+    if (this.readyState == 4 && this.status == 200) {
+      parserDataFeatureInfo(this.responseText)
+    }
   }
   http.send()
 }
 
 /**
  * Parsea la información obtenida de la petición GetFeatureInfo
- * @param {*} data 
+ * @param {*} data
  */
-function parserDataFeatureInfo(data){
-    let parser = new DOMParser();
-    let xmlDoc = parser.parseFromString(data,"text/xml");
+function parserDataFeatureInfo(data) {
+  let parser = new DOMParser();
+  let xmlDoc = parser.parseFromString(data, "text/xml");
 
-    document.getElementById("titleData").innerHTML = "Información obtenida";
+  document.getElementById("titleData").innerHTML = "Información obtenida";
 
-    console.log(xmlDoc)
-    if(xmlDoc.getElementsByTagName("ServiceException") != undefined){
-      document.getElementById("data").innerHTML = "<p>No se han encontrado datos</p>"
-    }
-    else{
-      document.getElementById("data").innerHTML = 
-      "<ul>" + 
-        "<li><strong>" + "Código Nacional: " + "</strong>" + xmlDoc.getElementsByTagName("FIELDS")[0].attributes[2].nodeValue + "</li>" + 
-        "<li><strong>" + "Año: " + "</strong>" + xmlDoc.getElementsByTagName("FIELDS")[0].attributes[3].nodeValue + "</li>" +
-        "<li><strong>" + "Código Europeo: " + "</strong>" + xmlDoc.getElementsByTagName("FIELDS")[0].attributes[4].nodeValue + "</li>" +
-        "<li><strong>" + "Nombre de la estación: " + "</strong>" + xmlDoc.getElementsByTagName("FIELDS")[0].attributes[5].nodeValue + "</li>" +
-        "<li><strong>" + "Valor legislado: " + "</strong>" + xmlDoc.getElementsByTagName("FIELDS")[0].attributes[6].nodeValue + "</li>" +
-        "<li><strong>" + "Datos: " + "</strong>" + xmlDoc.getElementsByTagName("FIELDS")[0].attributes[10].nodeValue + "</li>" +
+  console.log(xmlDoc)
+  if (xmlDoc.getElementsByTagName("ServiceException") != undefined) {
+    document.getElementById("data").innerHTML = "<p>No se han encontrado datos</p>"
+  }
+  else {
+    document.getElementById("data").innerHTML =
+      "<ul>" +
+      "<li><strong>" + "Código Nacional: " + "</strong>" + xmlDoc.getElementsByTagName("FIELDS")[0].attributes[2].nodeValue + "</li>" +
+      "<li><strong>" + "Año: " + "</strong>" + xmlDoc.getElementsByTagName("FIELDS")[0].attributes[3].nodeValue + "</li>" +
+      "<li><strong>" + "Código Europeo: " + "</strong>" + xmlDoc.getElementsByTagName("FIELDS")[0].attributes[4].nodeValue + "</li>" +
+      "<li><strong>" + "Nombre de la estación: " + "</strong>" + xmlDoc.getElementsByTagName("FIELDS")[0].attributes[5].nodeValue + "</li>" +
+      "<li><strong>" + "Valor legislado: " + "</strong>" + xmlDoc.getElementsByTagName("FIELDS")[0].attributes[6].nodeValue + "</li>" +
+      "<li><strong>" + "Datos: " + "</strong>" + xmlDoc.getElementsByTagName("FIELDS")[0].attributes[10].nodeValue + "</li>" +
       "</ul>"
-    }
+  }
 }
 
 
@@ -135,7 +135,7 @@ function initMap() {
 
   calculatePixelPoint(puntoControl, map.getZoom());
 
-  map.addListener('zoom_changed', function() {
+  map.addListener('zoom_changed', function () {
     calculatePixelPoint(puntoControl, map.getZoom());
   });
 
@@ -145,7 +145,7 @@ function initMap() {
     getElevation(event);
     showStreetView(position);
 
-    puntoControl= event.latLng;
+    puntoControl = event.latLng;
     calculatePixelPoint(puntoControl, map.getZoom());
 
     //Calculo de distancias
@@ -162,9 +162,9 @@ function initMap() {
     }
   });
 
-  
 
-  
+
+
 
   if (wms_services_emissions.length && wms_services_stations.length) showWmsLayer(0);
 }
@@ -175,18 +175,19 @@ function calculatePixelPoint(latLng, zoom) {
   var worldCoordinate = calculateLocaltion(latLng);
 
   var pixelCoordinate = new google.maps.Point(
-      Math.floor(worldCoordinate.x * scale),
-      Math.floor(worldCoordinate.y * scale));
+    Math.floor(worldCoordinate.x * scale),
+    Math.floor(worldCoordinate.y * scale));
 
   var tileCoordinate = new google.maps.Point(
-      Math.floor(worldCoordinate.x * scale / TILE_SIZE),
-      Math.floor(worldCoordinate.y * scale / TILE_SIZE));
+    Math.floor(worldCoordinate.x * scale / TILE_SIZE),
+    Math.floor(worldCoordinate.y * scale / TILE_SIZE));
 
-  console.log(pixelCoordinate)
+  pixelCoordinate.x -= tileCoordinate.x * TILE_SIZE;
+  pixelCoordinate.y -= tileCoordinate.y * TILE_SIZE;
 
-  showFeatureInfo(pixelCoordinate.x, pixelCoordinate.y);
-  
-  
+  showFeatureInfo(pixelCoordinate.x, pixelCoordinate.y, tileCoordinate.x, tileCoordinate.y);
+
+
   console.log(
     'puntoControl',
     'LatLng: ' + latLng,
@@ -202,8 +203,8 @@ function calculateLocaltion(latLng) {
   siny = Math.min(Math.max(siny, -0.9999), 0.9999);
 
   return new google.maps.Point(
-      TILE_SIZE * (0.5 + latLng.lng() / 360),
-      TILE_SIZE * (0.5 - Math.log((1 + siny) / (1 - siny)) / (4 * Math.PI)));
+    TILE_SIZE * (0.5 + latLng.lng() / 360),
+    TILE_SIZE * (0.5 - Math.log((1 + siny) / (1 - siny)) / (4 * Math.PI)));
 }
 
 /* Función para mostrar el streetView del punto que se pasa por parámetro */
