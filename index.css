@@ -6,9 +6,37 @@ html, body {
 
 /* DISPOSICIÓN DE LOS BLOQUES EN PANTALLA */
 
-#topDiv {
-    height: 75%;
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: baseline;
+}
+
+nav {
     width: 100%;
+}
+
+#topDiv {
+    height: 70%;
+    width: 90%;
+    margin: 5px auto;
+}
+
+#dataDiv {
+    height: 30%;
+    width: 90%;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+}
+
+#data ul {
+    columns: 2;
+}
+
+hr.separator {
+    width: 90%;
+    border: solid 1px black;
 }
 
 #mapsContainer {
@@ -20,15 +48,16 @@ html, body {
     width: 70%;
 }
 
+#streetview_frame {
+    display: flex;
+    align-items: center;
+}
+
 .card {
     width: 30%;
 }
 
-#streetview_frame {
-    
-}
-
-/* Controles sobre el mapa (provisional) */
+/* Controles sobre el mapa */
 
 div.controls {
     display: flex;
@@ -41,4 +70,19 @@ div.controls>div {
 
 #gasses-control {
     display: flex;
+    flex-direction: column;
+}
+
+#gasses-control>label {
+    margin-bottom: 0;
+}
+
+/* Helpers*/
+
+.hidden {
+    display: none;
+}
+
+.invisible {
+    visibility: hidden;
 }

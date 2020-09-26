@@ -1,87 +1,73 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <link rel="icon" type="image/png" href="img/icon.png" />
-    <title>Calidad del aire en España</title>
-    <style link="text/css"></style>
-    <link
-      rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-      integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z"
-      crossorigin="anonymous"
-    />
-    <link rel="stylesheet" type="text/css" href="index.css" />
 
-    <noscript>Necsitas activar JavaScript.</noscript>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <link rel="icon" type="image/png" href="img/icon.png" />
+  <title>Calidad del aire en España</title>
+  <style link="text/css"></style>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous" />
+  <link rel="stylesheet" type="text/css" href="index.css" />
 
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAaBo7bx5QaWY44Z4In3u8BNLGJxHiiLzs&libraries=geometry"></script>
-    <!-- Bootstrap scripts-->
-    <script
-      src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
-      integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
-      integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
-      integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
-      crossorigin="anonymous"
-    ></script>
-  </head>
+  <noscript>Necesitas activar JavaScript.</noscript>
 
-  <body onload="initPage()">
-    <nav class="navbar navbar-dark bg-dark">
-      <a class="navbar-brand" href="#">
-        <img
-          src="img/icon.png"
-          width="30"
-          height="30"
-          class="d-inline-block align-top"
-          loading="lazy"
-        />
-        Sensores de calidad del aire en España
-      </a>
-      <div class="navbar-text controls">
-        <div>
-          <input
-            class="form-check-input"
-            type="checkbox"
-            id="distances"
-            name="distances"
-            value="Calcular distancias"
-            onclick="distanceClick()"
-          />
-          <label class="form-check-label" for="distances"
-            >Calcular distancias</label
-          ><br />
-        </div>
-        <div id="gasses-control">
-          <label for="gasses">Visualizar sustancia</label><br />
-          <select name="gasses" id="gasses-selector"></select>
-        </div>
+  <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAaBo7bx5QaWY44Z4In3u8BNLGJxHiiLzs&libraries=geometry"></script>
+  <!-- Bootstrap scripts-->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+    integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+    integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+    crossorigin="anonymous"></script>
+</head>
+
+<body onload="initPage()">
+  <nav class="navbar navbar-dark bg-dark">
+    <a class="navbar-brand" href="#">
+      <img src="img/icon.png" width="30" height="30" class="d-inline-block align-top" loading="lazy" />
+      Sensores de calidad del aire en España
+    </a>
+    <div class="navbar-text controls">
+      <div>
+        <input class="form-check-input" type="checkbox" id="distances" name="distances" value="Calcular distancias"
+          onclick="distanceClick()" />
+        <label class="form-check-label" for="distances">Calcular distancias</label>
       </div>
-    </nav>
-
-    <div id="distance"></div>
-    <div id="topDiv">
-      <div id="mapsContainer">
-        <div id="map_frame"></div>
-        <div class="card">
-          <div class="card-body" id="streetview_frame"></div>
-        </div>
+      <div id="gasses-control">
+        <label for="gasses">Visualizar sustancia</label>
+        <select name="gasses" id="gasses-selector"></select>
       </div>
     </div>
-    <div id="dataDiv">
+  </nav>
+
+  <div id="distance"></div>
+  <div id="topDiv">
+    <div id="mapsContainer">
+      <div id="map_frame"></div>
+      <div class="card">
+        <div class="card-body" id="streetview_frame">Las imágenes de Street View se mostrarán aquí</div>
+      </div>
+    </div>
+  </div>
+  <hr class="separator" />
+  <div id="dataDiv">
+    <div>
       <h3 id="titleData"></h3>
       <div id="data"></div>
     </div>
+    <div id="distanceData" class="invisible">
+      <h3>Distancia entre estaciones</h3>
+      <div id="distanceInfo"></div>
+    </div>
+  </div>
 
-    <script src="wms_manager.js"></script>
-    <script src="mapa.js"></script>
-  </body>
+  <script src="wms_manager.js"></script>
+  <script src="mapa.js"></script>
+</body>
+
 </html>

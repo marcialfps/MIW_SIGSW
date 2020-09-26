@@ -93,11 +93,11 @@ function parserDataFeatureInfo(data) {
 
   document.getElementById("titleData").innerHTML = "Información obtenida";
 
-  console.log(xmlDoc)
+  console.log("FEATURE INFO RESPONSE: ", xmlDoc)
   if (xmlDoc.getElementsByTagName("ServiceException")[0] != undefined) {
     document.getElementById("data").innerHTML = "<p>No se han encontrado datos</p>"
   }
-  else if(xmlDoc.getElementsByTagName("FIELDS")[0] != undefined && xmlDoc.getElementsByTagName("FIELDS")[0].attributes != undefined){
+  else if (xmlDoc.getElementsByTagName("FIELDS")[0] != undefined && xmlDoc.getElementsByTagName("FIELDS")[0].attributes != undefined) {
     document.getElementById("data").innerHTML =
       "<ul>" +
       "<li><strong>" + "Código Nacional: " + "</strong>" + xmlDoc.getElementsByTagName("FIELDS")[0].attributes[2].nodeValue + "</li>" +
@@ -108,7 +108,7 @@ function parserDataFeatureInfo(data) {
       "<li><strong>" + "Datos: " + "</strong>" + xmlDoc.getElementsByTagName("FIELDS")[0].attributes[10].nodeValue + "</li>" +
       "</ul>"
   }
-  else{
+  else {
     document.getElementById("data").innerHTML = "<p>No se han encontrado datos</p>"
   }
 }
@@ -136,11 +136,11 @@ function initMap() {
     map: map,
   });
 
-  calculatePixelPoint(puntoControl, map.getZoom());
+  // calculatePixelPoint(puntoControl, map.getZoom());
 
-  map.addListener('zoom_changed', function () {
-    calculatePixelPoint(puntoControl, map.getZoom());
-  });
+  // map.addListener('zoom_changed', function () {
+  //   calculatePixelPoint(puntoControl, map.getZoom());
+  // });
 
   kmlLayer.addListener("click", function (event) {
     var position = { lat: event.latLng.lat(), lng: event.latLng.lng() };
@@ -222,9 +222,12 @@ function setLine() {
     path: [firstMark, secondMark],
   });
   poly.setMap(map);
+
+  // Show distance data and fill with content
+  document.getElementById("distanceData").classList.remove("invisible");
   document.getElementById(
-    "distance"
-  ).innerHTML = `Distancia entre estaciones de ${haversine_distance(
+    "distanceInfo"
+  ).innerHTML = `Distancia entre estaciones: ${haversine_distance(
     firstMark,
     secondMark
   ).toFixed(2)} km.`;
@@ -255,8 +258,14 @@ function haversine_distance(mk1, mk2) {
 
 // Elimina las lineas al desactivar el checkbox de distancias
 function distanceClick() {
-  if (!document.getElementById("distances").checked && poly) {
-    poly.setMap(null);
+  if (document.getElementById("distances").checked) {
+    document.getElementById("distanceData").classList.remove("invisible");
+    document.getElementById("distanceInfo").innerText = "Pulsa sobre dos estaciones para conocer la distancia que las separa";
+  }
+  else {
+    if (poly) poly.setMap(null);
+    // Esconder los datos de distancias
+    document.getElementById("distanceData").classList.add("invisible");
   }
 }
 
