@@ -20,7 +20,12 @@ html, body {
     width: 70%;
 }
 
+.card {
+    width: 30%;
+}
+
 #streetview_frame {
+    
 }
 
 /* Controles sobre el mapa (provisional) */

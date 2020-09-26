@@ -46,16 +46,19 @@
         />
         Sensores de calidad del aire en España
       </a>
-      <div class="controls">
+      <div class="navbar-text controls">
         <div>
           <input
+            class="form-check-input"
             type="checkbox"
             id="distances"
             name="distances"
             value="Calcular distancias"
             onclick="distanceClick()"
           />
-          <label for="distances">Calcular distancias</label><br />
+          <label class="form-check-label" for="distances"
+            >Calcular distancias</label
+          ><br />
         </div>
         <div id="gasses-control">
           <label for="gasses">Visualizar sustancia</label><br />
