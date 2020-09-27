@@ -3,7 +3,7 @@
   sobre los gases o emisiones que mostramos: CO, NO2, C6H6, SO2 y Ni
 */
 class WMS_Service {
-
+  st
   constructor(name, base_url, layers, isStationsWms) {
     this.name = name;
     this.base_url = base_url;
@@ -144,6 +144,9 @@ const wms_services_emissions = [
   emissions_Ni_WMS
 ];
 
+let current_stations_wms = stations_CO_WMS;
+let current_emissions_wms = emissions_CO_WMS;
+
 // Rellena la combobox con los valores de los WMS creados y gestiona qué hacer al seleccionar valor
 function initUI() {
 
@@ -154,12 +157,17 @@ function initUI() {
   wms_selector.addEventListener('change', (e) => {
     // Get the reference to the selected wms
     const index = wms_services_emissions.findIndex(service => service.name.localeCompare(e.target.value) === 0);
-    showWmsLayer(index);
+
+    current_stations_wms = wms_services_stations[index];
+    current_emissions_wms = wms_services_emissions[index];
+    showWmsLayer();
   });
 }
 
 // Organiza las capas WMS que muestra el mapa
-const showWmsLayer = (index, size) => {
+const showWmsLayer = (size) => {
+
+  if (!current_stations_wms || !current_emissions_wms) return;
   const tileSize = size || defaultTileSize;
 
   // Clear old overlays
@@ -167,14 +175,14 @@ const showWmsLayer = (index, size) => {
 
   // Set new overlays (stations and emissions)
   let overlayOptions = {
-    getTileUrl: wms_services_stations[index].getTileUrl,
+    getTileUrl: current_stations_wms.getTileUrl,
     tileSize: new google.maps.Size(tileSize, tileSize),
   };
   let overlayWMS = new google.maps.ImageMapType(overlayOptions);
   map.overlayMapTypes.push(overlayWMS);
 
   overlayOptions = {
-    getTileUrl: wms_services_emissions[index].getTileUrl,
+    getTileUrl: current_emissions_wms.getTileUrl,
     tileSize: new google.maps.Size(tileSize, tileSize),
   };
   overlayWMS = new google.maps.ImageMapType(overlayOptions);

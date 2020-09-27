@@ -37,6 +37,7 @@ nav {
 hr.separator {
     width: 90%;
     border: solid 1px black;
+    background-color: black;
 }
 
 #mapsContainer {

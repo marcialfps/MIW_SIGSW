@@ -40,13 +40,13 @@ const kmlUrl =
 //Se añade la petición getFeaturesInfo incialmente sobre unos puntos X, Y puestos directaente
 function featureInfoWMS(pixelX, pixelY, tileX, tileY) {
   //Capas de la petición
-  let stations_WMS_url = 'https://wms.mapama.gob.es/sig/EvaluacionAmbiental/CalidadAire/Estaciones_VLA_CO/wms.aspx?';
-  let layers_getFeatureInfo = 'Estaciones%20VLA%20CO'
+  let stations_WMS_url = current_stations_wms.base_url;
+  let layers_getFeatureInfo = current_stations_wms.layers;
 
   let styles = 'default';
   let srs = '4326';
-  let width = '256';
-  let height = '256';
+  let width = defaultTileSize.toString();
+  let height = defaultTileSize.toString();
   let format = 'application/json';
   let x = pixelX; //'162';
   let y = pixelY; //'80';
@@ -91,7 +91,7 @@ function parserDataFeatureInfo(data) {
   let parser = new DOMParser();
   let xmlDoc = parser.parseFromString(data, "text/xml");
 
-  document.getElementById("titleData").innerHTML = "Información obtenida";
+  document.getElementById("titleData").innerHTML = "Información de la estación";
 
   console.log("FEATURE INFO RESPONSE: ", xmlDoc)
   if (xmlDoc.getElementsByTagName("ServiceException")[0] != undefined) {
@@ -135,12 +135,6 @@ function initMap() {
     preserveViewport: false,
     map: map,
   });
-
-  // calculatePixelPoint(puntoControl, map.getZoom());
-
-  // map.addListener('zoom_changed', function () {
-  //   calculatePixelPoint(puntoControl, map.getZoom());
-  // });
 
   kmlLayer.addListener("click", function (event) {
     var position = { lat: event.latLng.lat(), lng: event.latLng.lng() };
