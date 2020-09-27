@@ -51,10 +51,12 @@ hr.separator {
 #streetview_frame {
     display: flex;
     align-items: center;
+    justify-content: center;
 }
 
 .card {
     width: 30%;
+    margin-left: 5px;
 }
 
 /* Controles sobre el mapa */
