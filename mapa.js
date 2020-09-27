@@ -83,17 +83,16 @@ function showFeatureInfo(pixelX, pixelY, tileX, tileY) {
   http.send()
 }
 
-/**
- * Parsea la información obtenida de la petición GetFeatureInfo
- * @param {*} data
- */
+// Parsea la información obtenida de la petición GetFeatureInfo
 function parserDataFeatureInfo(data) {
   let parser = new DOMParser();
   let xmlDoc = parser.parseFromString(data, "text/xml");
 
+  document.getElementById("titleData").classList.remove("invisible");
   document.getElementById("titleData").innerHTML = "Información de la estación";
 
   console.log("FEATURE INFO RESPONSE: ", xmlDoc)
+
   if (xmlDoc.getElementsByTagName("ServiceException")[0] != undefined) {
     document.getElementById("data").innerHTML = "<p>No se han encontrado datos</p>"
   }
