@@ -49,7 +49,7 @@ hr.separator {
     width: 70%;
 }
 
-#streetview_frame {
+#streetview_text {
     display: flex;
     align-items: center;
     justify-content: center;
